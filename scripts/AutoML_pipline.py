@@ -44,11 +44,6 @@ def load_data(path, target):
         print(f"Error loading data: {e}")
         raise
 
-
-
-# ─────────────────────────────────────────────
-# 3. MODEL DEFINITIONS + HYPERPARAMETER GRIDS
-# ─────────────────────────────────────────────
 def get_models_and_grids():
     """
     Defines the candidate models and their hyperparameter search spaces.
@@ -88,10 +83,6 @@ def get_models_and_grids():
     }
     return models
 
-
-# ─────────────────────────────────────────────
-# 4. TRAIN + TUNE + LOG TO MLFLOW
-# ─────────────────────────────────────────────
 def train_and_log(model_name, estimator, param_grid, X_train, X_test, y_train, y_test):
     """
     Trains a model, performs hyperparameter tuning using GridSearchCV, and logs parameters, metrics, and artifacts to MLflow.
@@ -111,7 +102,7 @@ def train_and_log(model_name, estimator, param_grid, X_train, X_test, y_train, y
 
     print(f"Training: {model_name}")
 
-    # Build full pipeline: preprocessor + classifier
+    # pipeline
     pipeline = Pipeline(steps=[("model", estimator)])
 
     # GridSearchCV
@@ -138,10 +129,10 @@ def train_and_log(model_name, estimator, param_grid, X_train, X_test, y_train, y
         f1 = f1_score(y_test, y_pred, average="weighted")
         roc = roc_auc_score(y_test, y_proba)
 
-        print(f"   Best Params : {grid_search.best_params_}")
-        print(f"   Accuracy    : {acc:.4f}")
-        print(f"   F1 Score    : {f1:.4f}")
-        print(f"   ROC-AUC     : {roc:.4f}")
+        print(f"   Best Params: {grid_search.best_params_}")
+        print(f"   Accuracy: {acc:.4f}")
+        print(f"   F1 Score: {f1:.4f}")
+        print(f"   ROC-AUC: {roc:.4f}")
 
         # log to MLflow
         mlflow.log_param("model_name", model_name)
@@ -185,10 +176,6 @@ def train_and_log(model_name, estimator, param_grid, X_train, X_test, y_train, y
         "run_id": run_id,
     }
 
-
-# ─────────────────────────────────────────────
-# 5. COMPARE AND SAVE BEST MODEL
-# ─────────────────────────────────────────────
 def save_best_model(results):
     """
     Saves the best model based on F1 score to a pickle file.
@@ -208,9 +195,6 @@ def save_best_model(results):
 
     return best
 
-# ─────────────────────────────────────────────
-# MAIN
-# ─────────────────────────────────────────────
 def main():
     """
     Main function to execute the training pipeline:
@@ -224,8 +208,8 @@ def main():
     # MLflow setup
     mlflow.set_experiment(EXPERIMENT_NAME)
     mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
-    print(f"MLflow tracking URI : {MLFLOW_TRACKING_URI}")
-    print(f"Experiment name     : {EXPERIMENT_NAME}")
+    print(f"MLflow tracking URI: {MLFLOW_TRACKING_URI}")
+    print(f"Experiment name: {EXPERIMENT_NAME}")
 
     # load data
     X, y = load_data(DATASET_PATH, TARGET_COLUMN)
